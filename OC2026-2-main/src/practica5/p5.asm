@@ -12,6 +12,7 @@ _start:
     mov ecx, 25 ;inciso D
     mov eax, 'Z'
     mov [edx + ecx], eax 
+    call puts
     mov ecx, 10;inciso E
     mov eax, 'P'
     mov [edx+ecx+5], eax
