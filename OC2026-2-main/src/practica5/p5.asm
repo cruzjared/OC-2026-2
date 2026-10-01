@@ -7,7 +7,15 @@ _start:
     ; --- IMPRIMIR CADENA COMPLETA ---
     mov edx, msg          ; edx = dirección de la cadena msg
     call puts             ; imprime cadena
-
+    mov byte[msg + 26 ], '@' ; inciso C
+	call puts 
+    mov ecx, 25 ;inciso D
+    mov eax, 'Z'
+    mov [edx + ecx], eax 
+    mov ecx, 10;inciso E
+    mov eax, 'P'
+    mov [edx+ecx+5], eax
+    call puts
     ; --- FIN DE PROGRAMA ---
     mov eax, 1            ; Llamada sys_exit
 	xor ebx, ebx          ; return 0
@@ -16,3 +24,4 @@ _start:
 section .data
     msg db 'abcdefghijklmnopqrstuvwxyz0123456789', 0xa, 0
     salto db 0xa
+    uno db 'Z'  
