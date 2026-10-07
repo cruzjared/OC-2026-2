@@ -7,13 +7,25 @@ _start:
     ; --- IMPRIMIR CADENA COMPLETA ---
     mov edx, msg          ; edx = dirección de la cadena msg
     call puts             ; imprime cadena
-    mov byte[msg + 26 ], '@' ; inciso C
+    ;inciso A 
+    mov byte [msg], 'Z'  ;usar msg es la direccion. si se usa [] se accede al contenido como desreferenciar puntero
+    call puts
+    ;inciso B
+    mov ebx, edx
+    add ebx, 23
+    mov al, 'X'
+    mov [ebx], al
+    call puts
+    ;inciso C
+    mov byte[msg + 26 ], '@'
 	call puts 
-    mov ecx, 25 ;inciso D
+    ;inciso D
+    mov ecx, 25 
     mov al, 'Z'
     mov byte [edx + ecx], al
     call puts
-    mov ecx, 10;inciso E
+    ;inciso E
+    mov ecx, 10
     mov al, 'P' ; subregistro de eax de 8 bits
     mov byte[edx+ecx+5], al
     call puts
