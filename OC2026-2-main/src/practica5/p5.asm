@@ -10,13 +10,21 @@ _start:
     mov byte[msg + 26 ], '@' ; inciso C
 	call puts 
     mov ecx, 25 ;inciso D
-    mov eax, 'Z'
-    mov [edx + ecx], eax 
+    mov al, 'Z'
+    mov byte [edx + ecx], al
     call puts
     mov ecx, 10;inciso E
-    mov eax, 'P'
-    mov [edx+ecx+5], eax
+    mov al, 'P' ; subregistro de eax de 8 bits
+    mov byte[edx+ecx+5], al
     call puts
+    ;inciso f
+    mov ecx, 2
+    mov ebx, edx ;copiar inicio de cadena y aumentarle 15
+    add ebx,15
+    mov al, '%'
+    mov byte[ebx+ecx*2], al
+    call puts
+
     ; --- FIN DE PROGRAMA ---
     mov eax, 1            ; Llamada sys_exit
 	xor ebx, ebx          ; return 0
