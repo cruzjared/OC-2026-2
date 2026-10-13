@@ -14,18 +14,22 @@ section .bss
 section .text
     global _start         ; referencia para inicio de programa
     
+
+;----------------------------------------------------------------------------------------    
 _start:   
    
     ; --- IMPRIMIR CADENA  ---
-    mov edx, msg1        
+    mov edx, msg1     
+    mov ax, 255   
     call puts   
     call captura    
-    call captura        
+    call captura  
+       
     jmp .fin_programa  
     
     
     
-    ; --- FIN DE PROGRAMA ---
+; ----------------------------------------------------------------------------------------
     .fin_programa: 
         mov edx, nline    
         call puts     
