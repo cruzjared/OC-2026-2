@@ -28,10 +28,27 @@ _start:
     ; --- IMPRIMIR CADENA  ---
     mov edx, msg1       
     call puts   
+    
+    mov edx, cadena 
+    mov ax, lencadena
     call captura 
-    mov eax, edx 
-    call mayusculas  
-    call puts;  
+
+    ;llamar a funcion de mayusculas
+    mov edx,cadena
+    call mayusculas 
+    mov edx, msg2
+    call puts 
+    mov edx, cadena
+    call puts
+
+    ;llamar a funcion de minusculas
+    mov edx,cadena
+    call minusculas
+    mov edx, msg2
+    call puts 
+    mov edx, cadena
+    call puts
+    
        
     jmp .fin_programa  
     
@@ -50,20 +67,22 @@ _start:
     captura:
 
             ;i = ebx
-            push ax
-            push ecx
-            push ebx
             push eax
+            push ebx
+            push ecx
             mov ebx,0
-            mov ecx,1
-            mov eax, lencadena
+            ;copiar la longitud a cx
+            mov ecx,0
+            mov cx, ax
+            sub ecx,1
+            
+           
             
     ;si lencadena - i = 0, terminar, si no continuar
-    .comparacion:   cmp eax,ebx
+    .comparacion:   cmp ecx,ebx
                     je .terminar
 
                     ;leer tecla presionada
-                    ;push ax
                     call getch
                     ;si lo leido por getch es \n, terminar
                     cmp al,ln
@@ -88,10 +107,9 @@ _start:
                     
                     ;agregar caracter nulo
     .terminar:      mov byte[edx], 0
-                    pop eax
-                    pop ebx
                     pop ecx
-                    pop ax
+                    pop ebx
+                    pop eax
                     ret
                     
     .borrar:        sub ebx,1
@@ -123,8 +141,31 @@ _start:
                 jmp .comparacionM
 
     .terminarM: ret
-                
 
+;-------------------------------------------------------------------------------------------
+                
+minusculas:
+
+    ;si lo de la cadena es igual a \0 terminar
+    .comparacionM:  cmp byte [edx],0
+                    je .terminarM
+                
+    ;si lo de la cadena es mayor a 64 y menor 91
+    .liminf:    cmp byte [edx],64
+                jg .limsup
+                jmp .aumento
+
+    .limsup:    cmp byte [edx], 91
+                jl .cambioM
+                jmp .aumento
+
+    .cambioM:   add byte [edx],32
+    .aumento:   add edx, 1
+                jmp .comparacionM
+
+    .terminarM: ret
+
+;-----------------------------------------------------------------------------
                 
 
 
