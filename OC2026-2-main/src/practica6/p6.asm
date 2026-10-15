@@ -28,8 +28,10 @@ _start:
     ; --- IMPRIMIR CADENA  ---
     mov edx, msg1       
     call puts   
-    call captura    
-    call captura  
+    call captura 
+    mov eax, edx 
+    call mayusculas  
+    call puts;  
        
     jmp .fin_programa  
     
@@ -44,52 +46,89 @@ _start:
 	    xor ebx, ebx          ; return 0
         int 0x80              ; Fin de programa
 
-   
+;-----------------------------------------------------------------------------------------
     captura:
 
             ;i = ebx
+            push ax
+            push ecx
+            push ebx
+            push eax
             mov ebx,0
             mov ecx,1
             mov eax, lencadena
+            
     ;si lencadena - i = 0, terminar, si no continuar
     .comparacion:   cmp eax,ebx
-                    je terminar
+                    je .terminar
 
                     ;leer tecla presionada
-                    push ax
+                    ;push ax
                     call getch
                     ;si lo leido por getch es \n, terminar
                     cmp al,ln
-                    je terminar
+                    je .terminar
                     ;si lo leido es igual a borrar, evaluar
                     cmp al, bskey
-                    je evaluar
-                    jmp guardar
-                    ; i < 1, no se puede borar
-    .evaluar:       cmp ebx,ecx
-                    jl borrar
+                    je .evaluar
+                    jmp .guardar
+                    ; i < 1, no se puede borrar
+    .evaluar:       cmp ebx,0
+                    jg .borrar
+                    jmp .comparacion
 
                     ;si no se tuvo que borrar, guardar la letra en la direccion de memoria
     .guardar:       mov [edx], al
                     add edx,1
                     call putchar
-                    pop ax
+                  
                     ;i++
                     add ebx,1
-                    jmp comparacion
-
+                    jmp .comparacion
+                    
+                    ;agregar caracter nulo
     .terminar:      mov byte[edx], 0
+                    pop eax
+                    pop ebx
+                    pop ecx
+                    pop ax
                     ret
                     
-    .borrar:        call borrar
-                    sub ebx,1
-                    sub,edx,1
-                    jmp comparacion
+    .borrar:        sub ebx,1
+                    sub edx,1
+                    call borrar
+                    jmp .comparacion
              
 
-    ;.sig:   call putchar
-           ; pop ax
-           ; ret
+;-----------------------------------------------------------------------------------------
+
+
+    mayusculas:
+
+    ;si lo de la cadena es igual a \0 terminar
+    .comparacionM:  cmp byte [edx],0
+                    je .terminarM
+                
+    ;si lo de la cadena es mayor a 96 y menor 
+    .liminf:    cmp byte [edx],96
+                jg .limsup
+                jmp .aumento
+
+    .limsup:    cmp byte [edx], 123
+                jl .cambioM
+                jmp .aumento
+
+    .cambioM:   sub byte [edx],32
+    .aumento:   add edx, 1
+                jmp .comparacionM
+
+    .terminarM: ret
+                
+
+                
+
+
+
 
     borrar:
         push ax 
