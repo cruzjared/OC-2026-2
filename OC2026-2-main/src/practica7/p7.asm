@@ -180,5 +180,55 @@ ATOI:
 .pops:          pop ecx
                 pop ebx
                 ret
+;----------------------------------------------------------------
+
+;recibe numero en eax y retorna cadena en edx
+ITOA:   
+                push ebx
+                push ecx
+                push esi
+                
+                ;esi = i
+                mov esi,0
+                mov ecx,0
+                mov bl,10
+
+
+.comparacion:   cmp ecx,0
+                jne .residuo
+.signo:         cmp eax,0
+                jnl .residuo
+                ;si es menor a 0, convertir a positivo y agregar '-' a la cadena
+                imul eax,eax,-1
+                mov [edx],45
+                ;si contador es 0, dividir directamente ax, sino, mov ax,cx
+.residuo:       cmp esi,0
+                je .division
+                mov ax,cx
+.division:      div bl 
+                cmp ah,0
+                je .pops
+                ;mover cociente a cl para dividir sobre ese en sig iteracion
+                mov cl,al
+                mov al,0
+                ;push de solo el residuo
+                push eax
+                add esi,1
+                jmp .comparacion
+
+.pops:          pop eax
+                mov byte [edx],ah
+                add edx,1
+                sub esi,1
+                cmp esi,0
+                je .terminar
+                jmp .pops
+
+.terminar:      mov byte[edx],0
+                pop esi
+                pop ecx
+                pop ebx
+                ret
+
 
 
