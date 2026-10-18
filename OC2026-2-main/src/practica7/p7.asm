@@ -11,12 +11,14 @@ section .data
     ; define byte de mensajes y linea final
     nline db ln,0
     msg1 db ln,'Captura: ', 0
-    msg2 db ln,'Cadena: ', 0
+    msg2 db ln,'Numero: ', 0
+    msg3 db ln,'Cadena: ', 0
     
 section .bss
     ;resb = reservar byte sin inicializar
     ;etiqeuta-resb-cantidad bytes
     cadena resb lencadena
+    numero resb lencadena
 
 section .text
     global _start         ; referencia para inicio de programa
@@ -32,8 +34,15 @@ _start:
     mov ax, lencadena
     call captura 
 
-  
-    
+    ;llamar ATOI
+    mov edx,cadena
+    call ATOI
+    mov ebx, eax
+
+    mov eax, 1           ; Syscall 1 = sys_exit
+    int 0x80
+
+
        
     jmp .fin_programa  
     
@@ -118,28 +127,37 @@ borrar:
         ret 
 
 ;-----------------------------------------------------------------------------------------
-
+;recibe cadena en edx y retorna numero en el registro eax
 ATOI:
-        push eax
+       
         push ebx
         push ecx
 
-        ;set i
-        mov al, 0
+        ;set contador (eax) y limpiar registros
+        mov eax, 0
+        mov ecx,0
+        mov ebx, 0
 
-
+                ;si la cadena tiene \0 terminar
 .comparacion:   cmp byte [edx],0
                 je .terminar
-                ;si edx es espacio avanza sin hacer nada
-                cmp byte [edx],32
-                je .avanzar
                 ;ver si i es 0 para ver signo
                 cmp eax,0
                 jne .evaluar
-                cmp byte [edx],45
+                ;si edx es espacio avanza sin hacer nada
+                cmp byte [edx],32
                 je .avanzar
+                
+                ;si hay + ignoras y avanzas
                 cmp byte [edx],43 
                 je .avanzar
+                ;si hay 
+                cmp byte [edx],45
+                jne .avanzar
+                mov ecx, -1
+                jmp .avanzar
+
+
                  
                 ;si edx es menor a 48, se termina
 .evaluar:       cmp byte [edx],48
@@ -147,18 +165,20 @@ ATOI:
                 ;si edx es mayor a 57, se termina
                 cmp byte [edx],57
                 jg .terminar
-                ;se hace la conversion
-                mov bl,10
-                ;bl*al, osea 10*i
-                mul bl
+                ;multiplicar contador *10 y guardar en contador
+                imul eax,eax,10
                 ;agregar el numero de la cadena a el resultado
-                add ax,[edx]
+                mov bl, [edx]
+                sub bl, 48
+                add eax,ebx
 .avanzar:       add edx,1
                 jmp .comparacion
 
-.terminar:      mov [edx], eax
-                pop ecx
+.terminar:      cmp ecx,-1
+                jne .pops
+                imul eax,eax,-1
+.pops:          pop ecx
                 pop ebx
-                pop eax
+                ret
 
 
