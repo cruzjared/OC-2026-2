@@ -37,10 +37,20 @@ _start:
     ;llamar ATOI
     mov edx,cadena
     call ATOI
-    mov ebx, eax
+    
 
-    mov eax, 1           ; Syscall 1 = sys_exit
-    int 0x80
+    ;teniendo ya el numero en eax, llamar itoa dando el inicio del puntero del numero escrito
+    mov edx, numero
+    call ITOA
+
+    ;escribir mensaje
+    mov edx, msg2
+    call puts
+
+
+    ;escribir numero como cadena
+    mov edx, numero
+    call puts
 
 
        
@@ -153,7 +163,7 @@ ATOI:
                 je .avanzar
                 ;si hay 
                 cmp byte [edx],45
-                jne .avanzar
+                jne .evaluar
                 mov ecx, -1
                 jmp .avanzar
 
@@ -186,12 +196,14 @@ ATOI:
 ITOA:   
                 push ebx
                 push ecx
-                push esi
+                push edi
                 
-                ;esi = i
-                mov esi,0
+                ;ecx = i
                 mov ecx,0
-                mov bl,10
+                mov edi, 0
+                ;mover puntero a edi para usar edx en division
+                mov edi, edx
+                mov ebx,10
 
 
 .comparacion:   cmp ecx,0
@@ -200,32 +212,31 @@ ITOA:
                 jnl .residuo
                 ;si es menor a 0, convertir a positivo y agregar '-' a la cadena
                 imul eax,eax,-1
-                mov [edx],45
+                mov byte [edi],45
+                add edi, 1
                 ;si contador es 0, dividir directamente ax, sino, mov ax,cx
-.residuo:       cmp esi,0
-                je .division
-                mov ax,cx
-.division:      div bl 
-                cmp ah,0
+
+.residuo:       mov edx, 0
+                ;eax/ebx resultado en edx:eax
+                div ebx
+                ;agregar 48 al residuo para convertir a ascii y pushear
+                add dl,48
+                push dx
+                add ecx,1
+                cmp eax,0
                 je .pops
-                ;mover cociente a cl para dividir sobre ese en sig iteracion
-                mov cl,al
-                mov al,0
-                ;push de solo el residuo
-                push eax
-                add esi,1
                 jmp .comparacion
 
-.pops:          pop eax
-                mov byte [edx],ah
-                add edx,1
-                sub esi,1
-                cmp esi,0
+.pops:          pop dx
+                mov byte [edi],dl
+                add edi,1
+                sub ecx,1
+                cmp ecx,0
                 je .terminar
                 jmp .pops
 
-.terminar:      mov byte[edx],0
-                pop esi
+.terminar:      mov byte[edi],0
+                pop edi
                 pop ecx
                 pop ebx
                 ret
