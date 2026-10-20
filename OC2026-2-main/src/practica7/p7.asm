@@ -34,9 +34,11 @@ _start:
     mov ax, lencadena
     call captura 
 
-    ;llamar ATOI
+    ;llamar ATOI, recibe cadena en edx y retorna numero en eax
     mov edx,cadena
     call ATOI
+
+    add eax, 123
     
 
     ;teniendo ya el numero en eax, llamar itoa dando el inicio del puntero del numero escrito
@@ -46,6 +48,7 @@ _start:
     ;escribir mensaje
     mov edx, msg2
     call puts
+
 
 
     ;escribir numero como cadena
