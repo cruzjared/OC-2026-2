@@ -1,3 +1,6 @@
+extern canonical_off
+extern canonical_on
+
 ;equivalente a los define en c
 section .data
     ;palabra clave bskey equivale a 0x7F o delete
@@ -62,8 +65,12 @@ _start:
         int 0x80              ; Fin de programa
 
 ;-----------------------------------------------------------------------------------------
-
+    ;al contiene dato a desplegar
     putchar:
+                
+                push edx
+                push ecx
+                push ebx
                 push eax
                 ;llamar servicio de sys_write
                 mov eax,4
@@ -76,7 +83,86 @@ _start:
                 ;llamar interrupcion
                 int 0x80
                 pop eax
+                pop ebx
+                pop ecx
+                pop edx
                 ret
+
+
+;-----------------------------------------------------------------------------------------
+    ;guarda lo leido en al -> eax low part
+    getch:
+        ;apagar nodo canonico
+        call canonical_off
+        ;guardar lo que tenia registro eax, ebx,ecx
+        
+        push ebx
+        push ecx
+        push edx
+        push eax
+        ;llamada servicio sys read
+        mov eax, 3 
+        ;origen teclado
+        mov ebx, 0
+        ;mov a puntero de texto lo pusheado a la pila 
+        mov ecx, esp
+        ;tamano a leer
+        mov edx, 1 
+        int 0x80 
+        
+        
+        call canonical_on
+        pop eax
+        pop edx
+        pop ecx
+        pop ebx
+       
+        ret
+;-----------------------------------------------------------------------------------------
+
+    getche:
+             ;apagar nodo canonico
+        call canonical_off
+        ;guardar lo que tenia registro eax, ebx,ecx
+        
+        push ebx
+        push ecx
+        push edx
+        push eax
+        ;llamada servicio sys read
+        mov eax, 3 
+        ;origen teclado
+        mov ebx, 0
+        ;mov a puntero de texto lo pusheado a la pila 
+        mov ecx, esp
+        ;tamano a leer
+        mov edx, 1 
+        int 0x80 
+        
+        
+        call canonical_on
+        pop eax
+        call putchar
+        pop edx
+        pop ecx
+        pop ebx
+       
+        ret
+
+
+;-----------------------------------------------------------------------------------------
+    ;recibe en edx el puntero de la cadena 
+    puts:
+                push eax
+    .comparar:  cmp byte [edx],0
+                je .terminar
+                mov al,[edx];
+                call putchar
+                add edx,1
+                jmp .comparar
+    .terminar:  pop eax
+                ret
+
 
 
 
@@ -191,7 +277,7 @@ minusculas:
 
 
     borrar:
-        push ax 
+        push eax 
         ;0x8 en ascii es backspace
         mov al,0x8
         call putchar    
@@ -199,5 +285,5 @@ minusculas:
         call putchar
         mov al,0x8
         call putchar   
-        pop ax
+        pop eax
         ret 
