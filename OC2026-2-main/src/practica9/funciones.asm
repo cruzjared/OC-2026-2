@@ -1,4 +1,4 @@
- %macro ENTRADA 0
+%macro ENTRADA 0
     push ebp
     mov ebp, esp
 %endmacro
@@ -103,6 +103,8 @@ _maximo:
             push esi
             mov ebx, dword[ebp+8] ;arreglo
             mov ecx, dword[ebp+12] ; len
+            ;mueves el contenido actual del arreglo a edx
+            mov edx, dword[ebx]
             ;en el primer espacio reservado en stack, se mueve edx (maximo)
             mov dword[ebp-4], edx 
             WHILE -1,ecx,cuerpo,cambio,jg
@@ -131,9 +133,7 @@ _sumatoria:
             push esi
             mov ebx, dword[ebp+8] ;arreglo
             mov ecx, dword[ebp+12] ; len
-            ;mueves el contenido actual del arreglo a edx
-            mov edx, dword[ebx]
-            ;en el primer espacio reservado en stack, se mueve edx (sumatoria)
+            ;en el primer espacio reservado en stack, se inicializa la sumatoria en 0
             mov dword[ebp-4], 0
             WHILESUM -1,ecx,suma
            
