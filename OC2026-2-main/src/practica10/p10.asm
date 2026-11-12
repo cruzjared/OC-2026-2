@@ -20,13 +20,19 @@ section .text
 
 set_bit:
             ENTRADA
+            push ebx
             push ecx
+            push edx
+            ;pasar a edx para desreferenciar el puntero
+            ;mover puntero a registro de 32 bits NO USAR BYTE
+            mov edx, [ebp+8]
             mov cl, byte[ebp+12] ; posicion
-            ;aplicar corrimiento a la derecha el numero de posiciones
-            shr byte[ebp+8], cl
-            OR byte[ebp+8], 0b00000001
+            mov bl,0b00000001 
+            shl bl, cl
+            OR byte[edx], bl
+            pop edx
             pop ecx
-            ;el retorno siempre en eax
+            pop ebx
             SALIDA
             ret
 

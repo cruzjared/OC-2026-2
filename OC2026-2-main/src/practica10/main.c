@@ -12,10 +12,10 @@ int main (void)
 {
     srand(time(NULL));
 
-    unsigned char valor = 9;
+    unsigned char valor = 100;
     set_bit(&valor, 0); 
     printf("\n numero: %d \n", valor); 
-    printf("\n el valor del bit 7 es de: %d \n", get_bit(valor, 7));
+    printf("\n el valor del bit 6 es de: %d \n", get_bit(valor, 6));
 
 
 
