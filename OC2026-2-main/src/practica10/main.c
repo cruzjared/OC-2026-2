@@ -23,9 +23,9 @@ int main (void)
    do
    {
         system("clear");
-        printf("\n\r SENSOR 1: ~%d °C ",temps[0]);
+        printf("\n SENSOR 1: ~%d °C ",temps[0]);
         printFlag(flagsRegister[0]);
-        printf("\n\r SENSOR 2: ~%d °C ",temps[1]);
+        printf("\n SENSOR 2: ~%d °C ",temps[1]);
         printFlag(flagsRegister[1]);
         printf("\n\n MENU");
         printf("\n[1] Actualizar");
@@ -91,31 +91,27 @@ void updateFlags(int* temps, int* last_temps, unsigned char *flags)
     {
         flags[i] = 0;
         resta = temps[i]-last_temps[i];
-        //subio o bajo
+        //si se mantuvo igual
         if(resta == 0)
-        {
             set_bit(&flags[i], 0);
-            return;
-        }  
-        else if(resta < 0)
-            set_bit(&flags[i],4);
-        else 
-            set_bit(&flags[i], 5);
-
-        //cuanto subio o bajo
-        if(resta == 1 || resta == -1)
-            set_bit(&flags[i], 1);
-        else if(resta == 2 || resta == -2)
-            set_bit(&flags[i],2);
         else
-            set_bit(&flags[i],3);
+        {
+            //si subio o bajo
+            if(resta < 0)
+            set_bit(&flags[i],4);
+            else 
+                set_bit(&flags[i], 5);
 
+            //cuanto subio o bajo
+            if(resta == 1 || resta == -1)
+                set_bit(&flags[i], 1);
+            else if(resta == 2 || resta == -2)
+                set_bit(&flags[i],2);
+            else
+                set_bit(&flags[i],3);
+        }
+        
         last_temps[i] = temps[i];
-
-
-
-
-
     }
 
     
@@ -160,7 +156,7 @@ void printFlag(unsigned char flag)
             printf(">>");
     }
     //diferencia 3 grados
-    else
+    else if(get_bit(flag,3))
     {
         //ver si diferencia + o -
         if(get_bit(flag,4))
